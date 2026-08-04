@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script>document.documentElement.classList.add('js')</script><!-- progressive enhancement: content is visible without JS -->
+
+<title>UniLAP: A Unified Latent Action Policy for Cross-Embodiment Manipulation</title>
+<link rel="icon" type="image/png" href="assets/image/favicon.png" />
+<link rel="apple-touch-icon" href="assets/image/favicon.png" />
+<meta name="description" content="UniLAP is a unified continuous latent-action policy: it distils a LAM teacher from action-free video via flow matching and transfers across robot embodiments with a lightweight decoder, with no future frames at inference." />
+
+<!-- Open Graph / social (placeholder; replace url/image when public) -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content="UniLAP: A Unified Latent Action Policy for Cross-Embodiment Manipulation" />
+<meta property="og:description" content="UniLAP models latent actions as a continuous flow distilled from action-free video, transferring across embodiments: hand-pose forecasting, single-arm, humanoid, and a real xArm7." />
+<meta property="og:image" content="assets/image/og_card.png" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<!-- favicon: continuity symbol (set in <head> above) -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet" />
+
+<style>
+/* ============================== TOKENS ============================== */
+:root{
+  --paper:#FBFBF9;        /* warm near-white canvas         */
+  --paper-2:#F3F3EE;      /* slightly deeper surface        */
+  --paper-3:#ECECE5;      /* card / placeholder fill        */
+  --ink:#16161A;          /* near-black text                */
+  --ink-soft:#43434C;     /* secondary text                 */
+  --ink-faint:#8A8A93;    /* muted / captions               */
+  --line:#E3E3DC;         /* hairlines                      */
+  --line-strong:#C9C9C0;
+  --accent:#4F46E5;       /* indigo                         */
+  --accent-strong:#4338CA;
+  --accent-tint:rgba(79,70,229,.085);
+  --accent-tint-2:rgba(79,70,229,.16);
+  --accent-ring:rgba(79,70,229,.30);
+
+  --font-display:"Newsreader",Georgia,"Times New Roman",serif;
+  --font-body:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+
+  --maxw:1060px;
+  --measure:780px;
+  --radius:14px;
+  --radius-sm:9px;
+  --shadow:0 1px 2px rgba(22,22,26,.04),0 8px 30px rgba(22,22,26,.06);
+  --shadow-lift:0 2px 6px rgba(22,22,26,.06),0 18px 50px rgba(22,22,26,.10);
+}
+
+/* ============================== RESET ============================== */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:84px;-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--font-body);font-size:17px;line-height:1.7;
+  font-weight:400;letter-spacing:-.003em;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+img,video{max-width:100%;display:block}
+a{color:var(--accent);text-decoration:none}
+a:hover{color:var(--accent-strong)}
+h1,h2,h3{font-family:var(--font-display);font-weight:600;letter-spacing:-.018em;line-height:1.08;margin:0}
+::selection{background:var(--accent-tint-2);color:var(--ink)}
+
+/* ============================== LAYOUT ============================== */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+section{padding:78px 0;border-top:1px solid var(--line)}
+.lead{max-width:none}  /* body text fills the full column width */
+
+/* section eyebrow: 01 / METHOD */
+.eyebrow{
+  font-family:var(--font-mono);font-size:12.5px;font-weight:500;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);
+  display:flex;align-items:center;gap:12px;margin-bottom:22px;
+}
+.eyebrow .num{color:var(--accent);font-weight:600}
+.eyebrow::after{content:"";flex:1;height:1px;background:var(--line);max-width:120px}
+h2.h{font-size:clamp(1.7rem,3.4vw,2.5rem);margin-bottom:18px}
+h3.sub{font-size:1.32rem;font-weight:600;margin:0 0 10px}
+p{margin:0 0 18px}
+/* headings balance into even lines; body text fills the full width (greedy wrap) */
+h1.title,h2.h,h3.sub,.card h3,.phase h3{text-wrap:balance}
+.muted{color:var(--ink-soft)}
+.note{font-family:var(--font-mono);font-size:12px;color:var(--ink-faint);letter-spacing:.01em;margin-top:14px;line-height:1.6}
+
+/* ============================== NAV ============================== */
+nav{
+  position:sticky;top:0;z-index:50;
+  background:rgba(251,251,249,.82);backdrop-filter:saturate(150%) blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.nav-in{max-width:var(--maxw);margin:0 auto;padding:0 28px;height:62px;
+  display:flex;align-items:center;justify-content:space-between;gap:18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.02em;font-size:1.05rem;color:var(--ink)}
+.brand .brand-logo{width:30px;height:30px;object-fit:contain;display:block}
+.nav-links{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{
+  font-size:14px;font-weight:500;color:var(--ink-soft);padding:7px 12px;border-radius:8px;
+  white-space:nowrap;transition:color .2s,background .2s;
+}
+.nav-links a:hover{color:var(--ink);background:var(--paper-2)}
+.nav-links a.active{color:var(--accent);background:var(--accent-tint)}
+
+/* ============================== HERO ============================== */
+.hero{position:relative;border-top:none;padding:74px 0 64px;overflow:hidden}
+.hero::before{ /* faint engineering-grid texture */
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(22,22,26,.05) 1px, transparent 0);
+  background-size:26px 26px;
+  -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 28%,#000 30%,transparent 78%);
+          mask-image:radial-gradient(ellipse 80% 60% at 50% 28%,#000 30%,transparent 78%);
+}
+.hero .wrap{position:relative;z-index:1}
+.kicker{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:26px}
+.chip{
+  font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:.04em;
+  color:#fff;background:var(--accent);padding:5px 11px;border-radius:7px;
+}
+.kicker .ven{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-faint)}
+h1.title{
+  font-size:clamp(2.05rem,4.7vw,3.5rem);font-weight:500;line-height:1.12;
+  letter-spacing:-.02em;max-width:22em;margin-bottom:26px;
+  text-wrap:balance;  /* even line lengths, avoids choppy short lines */
+}
+h1.title em{font-style:italic;color:var(--accent);font-weight:500}
+.authors{font-size:1.08rem;color:var(--ink);margin-bottom:4px;line-height:1.6}
+.authors sup{color:var(--accent);font-size:.7em}
+.affil{font-size:.95rem;color:var(--ink-faint);margin-bottom:8px}
+.placeholder-tag{
+  display:inline-block;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.08em;
+  color:var(--accent);background:var(--accent-tint);border:1px dashed var(--accent-ring);
+  padding:1px 7px;border-radius:5px;text-transform:uppercase;vertical-align:middle;margin-left:4px;
+}
+
+/* hero buttons */
+.links{display:flex;flex-wrap:wrap;gap:11px;margin:30px 0 44px}
+.btn{
+  display:inline-flex;align-items:center;gap:9px;
+  font-size:14.5px;font-weight:600;letter-spacing:-.01em;
+  padding:11px 18px;border-radius:11px;border:1px solid var(--line-strong);
+  background:#fff;color:var(--ink);transition:transform .18s,box-shadow .2s,border-color .2s,background .2s;
+}
+.btn svg{width:17px;height:17px;flex:none}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--ink)}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn.primary:hover{background:var(--accent-strong);border-color:var(--accent-strong);box-shadow:0 10px 26px rgba(79,70,229,.32)}
+
+/* ============================== MEDIA PLACEHOLDERS ============================== */
+/* Each .ph is an intentional, styled placeholder. To use a real asset, replace the
+   whole <div class="ph"> with <video ... controls loop muted playsinline> or <img>. */
+.ph{
+  position:relative;border-radius:var(--radius);background:var(--paper-3);
+  border:1.5px dashed var(--accent-ring);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;color:var(--ink-faint);overflow:hidden;transition:transform .2s,box-shadow .25s;
+}
+.ph::after{ /* subtle inner grid */
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:34px 34px;-webkit-mask-image:radial-gradient(circle at 50% 50%,#000,transparent 75%);mask-image:radial-gradient(circle at 50% 50%,#000,transparent 75%);
+}
+.ph:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.ph .ico{width:40px;height:40px;color:var(--accent);opacity:.85;position:relative;z-index:1}
+.ph .lbl{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;position:relative;z-index:1}
+.ph .fname{font-family:var(--font-mono);font-size:12px;color:var(--ink-soft);background:#fff;border:1px solid var(--line);
+  padding:3px 9px;border-radius:6px;position:relative;z-index:1}
+.r169{aspect-ratio:16/9}
+.r167{aspect-ratio:16/7}
+.r43{aspect-ratio:4/3}
+.teaser{margin-top:14px}
+figure{margin:0}
+figcaption{font-size:14px;color:var(--ink-soft);margin-top:13px;line-height:1.6}  /* spans the figure width (not the narrow text measure) */
+figcaption b{color:var(--ink);font-weight:600}
+.figframe{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow)}
+.figframe img{display:block;width:100%;border-radius:7px}
+.probe-grid{display:grid;grid-template-columns:1.88fr 1.54fr;gap:26px;align-items:start}  /* columns ∝ aspect ratio → equal figure height */
+@media(max-width:760px){.probe-grid{grid-template-columns:1fr}}
+.abstract .kw{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.abstract .kw span{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.03em;color:var(--accent);background:var(--accent-tint);border:1px solid var(--accent-ring);padding:4px 12px;border-radius:999px}
+
+/* video grids */
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.vcard figcaption{font-size:13px;margin-top:9px}
+.vgroup{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;margin:24px 0 11px}
+.vgroup:first-of-type{margin-top:6px}
+.vtabs{display:flex;gap:6px;margin-bottom:9px;flex-wrap:wrap}
+.vtab{font-family:var(--font-mono);font-size:11px;letter-spacing:.03em;padding:4px 11px;border-radius:7px;border:1px solid var(--line);background:#fff;color:var(--ink-soft);cursor:pointer;transition:color .15s,background .15s,border-color .15s}
+.vtab:hover{color:var(--ink);border-color:var(--ink-soft)}
+.vtab.is-on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.takevid{transition:opacity .15s ease;background:var(--paper-2)}
+.vtag{font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:.04em}
+
+/* ============================== ABSTRACT ============================== */
+.abstract p{font-size:1.16rem;line-height:1.78;color:var(--ink)}
+.abstract .drop::first-letter{
+  font-family:var(--font-display);font-weight:600;font-size:3.4em;float:left;
+  line-height:.84;padding:6px 12px 0 0;color:var(--accent);
+}
+
+/* ============================== HIGHLIGHT CARDS ============================== */
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:8px}
+.card{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  padding:26px 24px;transition:transform .2s,box-shadow .25s,border-color .2s;position:relative;overflow:hidden;
+}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);transform:scaleY(0);transform-origin:top;transition:transform .3s}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lift);border-color:transparent}
+.card:hover::before{transform:scaleY(1)}
+.card .cnum{font-family:var(--font-mono);font-size:12px;color:var(--accent);font-weight:600;letter-spacing:.08em}
+.card h3{font-size:1.18rem;font-weight:600;margin:10px 0 8px}
+.card p{font-size:.95rem;color:var(--ink-soft);margin:0;line-height:1.62}
+
+/* ============================== METHOD ============================== */
+.phase-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:30px}
+.phase{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:26px 26px 22px}
+.phase .tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:12px;
+  font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);
+  background:var(--accent-tint);padding:5px 11px;border-radius:7px;margin-bottom:14px}
+.phase h3{font-size:1.22rem;margin-bottom:10px}
+.phase p{font-size:.96rem;color:var(--ink-soft);margin:0}
+.phase ul{margin:12px 0 0;padding-left:18px;color:var(--ink-soft);font-size:.92rem}
+.phase li{margin-bottom:6px}
+.pullquote{
+  font-family:var(--font-display);font-style:italic;font-size:1.45rem;line-height:1.45;
+  color:var(--ink);border-left:3px solid var(--accent);padding:6px 0 6px 24px;margin:34px 0 0;
+}
+
+/* ============================== TABLES (booktabs) ============================== */
+.table-wrap{overflow-x:auto;margin:6px 0 0}
+table.bt{border-collapse:collapse;width:100%;font-size:15px;font-variant-numeric:tabular-nums}
+table.bt caption{caption-side:top;text-align:left;font-size:13px;color:var(--ink-soft);
+  margin-bottom:12px;line-height:1.55}
+table.bt thead th{border-top:2px solid var(--ink);border-bottom:1px solid var(--ink);
+  padding:11px 14px;text-align:right;font-weight:600;font-size:13.5px;color:var(--ink);white-space:nowrap}
+table.bt thead th:first-child{text-align:left}
+table.bt tbody td{padding:10px 14px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+table.bt tbody td:first-child{text-align:left;font-weight:500}
+table.bt tbody tr:last-child td{border-bottom:2px solid var(--ink)}
+table.bt tbody tr:hover td{background:var(--paper-2)}
+table.bt td.best{background:var(--accent-tint);color:var(--accent-strong);font-weight:700}
+table.bt .small{font-family:var(--font-mono);font-size:11px;color:var(--ink-faint);font-weight:400;margin-left:5px}
+table.bt tr.total td{font-weight:700}
+
+/* stat chips */
+.stats{display:flex;flex-wrap:wrap;gap:14px;margin:26px 0 4px}
+.stat{flex:1;min-width:150px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px}
+.stat .v{font-family:var(--font-display);font-size:2.1rem;font-weight:600;letter-spacing:-.02em;color:var(--ink);line-height:1}
+.stat .v small{font-size:.92rem;color:var(--ink-faint);font-family:var(--font-body);font-weight:500}
+.stat .k{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-top:9px}
+
+/* callout */
+.callout{background:var(--accent-tint);border:1px solid var(--accent-ring);border-radius:var(--radius);
+  padding:22px 24px;margin:26px 0 0;display:flex;gap:18px;align-items:flex-start}
+.callout .badge{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:#fff;background:var(--accent);padding:5px 10px;border-radius:7px;white-space:nowrap;margin-top:3px}
+.callout p{margin:0;font-size:.98rem;color:var(--ink)}
+.callout b{color:var(--accent-strong)}
+
+.subblock{margin-top:46px}
+.subblock:first-of-type{margin-top:30px}
+
+/* ============================== BIBTEX ============================== */
+.bibwrap{position:relative;background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.bibhead{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--paper-2)}
+.bibhead span{font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;color:var(--ink-faint);text-transform:uppercase}
+.copy{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-body);font-size:13px;font-weight:600;
+  color:var(--ink);background:#fff;border:1px solid var(--line-strong);border-radius:8px;padding:6px 12px;cursor:pointer;transition:.2s}
+.copy:hover{border-color:var(--accent);color:var(--accent)}
+.copy.ok{border-color:var(--accent);color:var(--accent);background:var(--accent-tint)}
+.copy svg{width:14px;height:14px}
+pre.bib{margin:0;padding:20px 18px;font-family:var(--font-mono);font-size:13px;line-height:1.7;
+  color:var(--ink);overflow-x:auto;white-space:pre}
+
+/* ============================== FOOTER ============================== */
+footer{border-top:1px solid var(--line);padding:48px 0 60px;color:var(--ink-faint);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:center}
+footer a{color:var(--ink-soft)}
+footer a:hover{color:var(--accent)}
+
+/* ============================== MOTION ============================== */
+.js .reveal{opacity:0;transform:translateY(20px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+.reveal.is-visible{opacity:1;transform:none}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.js .rise{opacity:0;animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards}
+.d1{animation-delay:.05s}.d2{animation-delay:.16s}.d3{animation-delay:.28s}.d4{animation-delay:.4s}.d5{animation-delay:.54s}
+
+/* ============================== RESPONSIVE ============================== */
+@media(max-width:900px){
+  .phase-grid{grid-template-columns:1fr}
+  .g4{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:680px){
+  body{font-size:16px}
+  section{padding:58px 0}
+  .cards,.g3,.g2{grid-template-columns:1fr}
+  .g4{grid-template-columns:repeat(2,1fr)}
+  .nav-links{gap:0}
+  .callout{flex-direction:column;gap:12px}
+  .abstract p{font-size:1.08rem}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .js .reveal,.js .rise{opacity:1!important;transform:none!important}
+}
+
+/* ===== animated teaser (web-native rebuild of the drawio figure) ===== */
+.tsr{display:block;width:100%;height:auto}
+.tsr text{font-family:var(--font-body);fill:var(--ink-soft)}
+.tp-frame{fill:none;stroke:#C9C9C0;stroke-width:1.3;stroke-dasharray:5 5}
+.tp-frame.uni{stroke:#9673A6}
+.tp-title{font-family:var(--font-display);font-size:19px;font-weight:600;fill:var(--ink);text-anchor:middle}
+.tp-title.uni{fill:#6F4C93}
+.tp-box{fill:#fff;stroke:#C9C9C0;stroke-width:1.3}
+.tp-box.cream{fill:#EFE8D7;stroke:#B3AA90}
+.tp-box.purple{fill:#ECE5F7;stroke:#9673A6}
+.tp-box.green{fill:#DCEFD9;stroke:#7DB266}
+.tp-box.orange{fill:#FBEAD0;stroke:#D79B00}
+.tp-box.dim{opacity:.72}
+.tp-bt{font-size:13px;fill:var(--ink);text-anchor:middle;dominant-baseline:middle}
+.tp-bt.b{font-weight:600}
+.tp-cap{font-size:11px;fill:var(--ink-faint);text-anchor:middle;font-family:var(--font-mono)}
+.tp-fx{font-family:var(--font-display);fill:var(--ink-soft);text-anchor:middle}
+.tp-fx .v{font-style:italic}
+.tp-fx .op{fill:var(--ink-faint);font-family:var(--font-mono)}
+.tp-arr{stroke:var(--ink-faint);stroke-width:1.6;fill:none}
+.tp-arr.acc{stroke:#9673A6}
+.tp-tok{fill:#DADAD4;stroke:#ABAB9F;stroke-width:1.1}
+.tp-flow{fill:none;stroke:#3FA06A;stroke-width:3.4;stroke-linecap:round}
+.tp-bar{fill:#B49CCC}
+.tp-bar.pink{fill:#F2A6AE}
+.tp-bar.ours{fill:#7FC39A}
+.tp-blab{font-size:10px;fill:var(--ink);dominant-baseline:middle}
+.tp-blab.w{fill:#2f6b48;font-weight:600}
+.tp-val{font-size:10px;fill:var(--ink-faint);dominant-baseline:middle;font-family:var(--font-mono)}
+.tp-val.ours{fill:#3E8F5E;font-weight:600}
+.tp-slab{font-size:11px;fill:var(--ink-soft);text-anchor:end;font-weight:600}
+.js .tsr .ael{opacity:0;animation:tIn .55s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes tIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.js .tsr .tp-flow{stroke-dasharray:680;stroke-dashoffset:680;animation:tDraw 1.1s ease forwards;animation-delay:2.9s}
+@keyframes tDraw{to{stroke-dashoffset:0}}
+.js .tsr .tfade{animation:tOut .7s ease forwards;animation-delay:3.0s}
+@keyframes tOut{from{opacity:.85}to{opacity:.18}}
+.js .tsr .hbar{transform-box:fill-box;transform-origin:0 50%;transform:scaleX(0);animation:tBarX .6s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes tBarX{to{transform:scaleX(1)}}
+.js .tsr .flowdash{stroke-dasharray:4 5;animation:tDash 1.1s linear infinite}
+@keyframes tDash{to{stroke-dashoffset:-18}}
+@media(prefers-reduced-motion:reduce){
+  .js .tsr .ael{opacity:1!important;transform:none!important;animation:none!important}
+  .js .tsr .tp-flow{stroke-dashoffset:0!important;animation:none!important}
+  .js .tsr .tfade{opacity:.18!important;animation:none!important}
+  .js .tsr .hbar{transform:none!important;animation:none!important}
+  .js .tsr .flowdash{animation:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================== NAV ============================== -->
+<nav>
+  <div class="nav-in">
+    <a class="brand" href="#top"><img class="brand-logo" src="assets/image/logo.png" alt="" />UniLAP</a>
+    <div class="nav-links">
+      <a href="#abstract">Abstract</a>
+      <a href="#method">Method</a>
+      <a href="#real-robot">Real Robot</a>
+      <a href="#benchmarks">Benchmarks</a>
+      <a href="#analysis">Analysis</a>
+      <a href="#bibtex">BibTeX</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================== HERO ============================== -->
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="kicker rise d1">
+      <span class="chip">UniLAP</span>
+      <span class="ven">Robot Learning &nbsp;·&nbsp; Under Review 2026</span>
+    </div>
+    <h1 class="title rise d2">A Unified Latent Action Policy for <em>Cross‑Embodiment</em> Manipulation</h1>
+
+    <div class="rise d3">
+      <p class="authors">
+        Lei Yao<sup>1,2&dagger;</sup>,&nbsp;
+        Qiao Feng<sup>1</sup>,&nbsp;
+        Mutian Tong<sup>1</sup>,&nbsp;
+        Qihao Yun<sup>1</sup>,&nbsp;
+        Lap-Pui Chau<sup>2</sup>,&nbsp;
+        Lingjie Liu<sup>1</sup>
+      </p>
+      <p class="affil"><sup>1</sup>University of Pennsylvania &nbsp;·&nbsp; <sup>2</sup>The Hong Kong Polytechnic University</p>
+      <p class="affil" style="font-size:.82em;opacity:.75;margin-top:3px"><sup>&dagger;</sup>&nbsp;Work done during a visit to the University of Pennsylvania.</p>
+    </div>
+
+    <!-- All links are placeholders (href="#"). Replace with real URLs when public. -->
+    <div class="links rise d4">
+      <a class="btn primary" href="#" aria-label="Paper PDF">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        Paper
+      </a>
+      <a class="btn" href="#" aria-label="arXiv">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        arXiv
+      </a>
+      <a class="btn" href="#" aria-label="Code on GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5A11.5 11.5 0 0 0 23.5 12C23.5 5.7 18.3.5 12 .5z"/></svg>
+        Code
+      </a>
+      <a class="btn" href="#" aria-label="Video">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>
+        Video
+      </a>
+      <a class="btn" href="#" aria-label="Models">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 9 5-9 5-9-5 9-5z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/></svg>
+        Models
+      </a>
+    </div>
+
+    <figure class="teaser rise d5">
+      <div class="figframe"><video class="autovid" muted playsinline preload="none" poster="assets/image/teaser_poster.png" aria-label="UniLAP teaser animation" style="display:block;width:100%;aspect-ratio:2612/1208;border-radius:7px"><source src="assets/video/teaser_anim.mp4" type="video/mp4" /></video></div>
+      <figcaption><b>Left:</b> prior pipelines quantize the latent into a discrete codebook predicted autoregressively by a VLM. <b>Middle:</b> UniLAP models the latent as a continuous flow distilled from a frozen LAM teacher, acting without future frames at inference. <b>Right:</b> the same pretrained latent adapts to hand‑pose forecasting, single‑arm, humanoid, and real‑robot manipulation, with consistent gains.</figcaption>
+    </figure>
+  </div>
+</header>
+
+<!-- ============================== ABSTRACT ============================== -->
+<section id="abstract" class="reveal">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">01</span> Abstract</div>
+    <div class="abstract lead">
+      <p class="drop">Latent Action Models (LAMs) capture manipulation priors from <b>action‑free video</b>, but <b>discrete</b> latents impose a granularity bottleneck that limits the actions they can represent. Recent continuous alternatives mitigate this, yet they are typically used as proxies for world modeling and require a further <b>planning step</b> to produce executable actions. We introduce <b>UniLAP</b>, a unified <b>continuous</b> latent‑action policy that models the latent space via <b>flow matching</b> and bypasses any reliance on future frames during inference.</p>
+      <p>By distilling a LAM teacher with a <b>flow‑adaptive objective</b>, UniLAP inherently retains the multimodal action distribution. To decouple the action representation from task‑irrelevant appearance, we extract a <b>label‑free motion target</b> that isolates kinematic cues from spurious visual dynamics. With this embodiment‑agnostic latent space, UniLAP adapts to new embodiments with only a fresh decoder and light finetuning. Pretrained on multi‑source videos at a compact <b>1.1B</b>-parameter scale, it outperforms state‑of‑the‑art latent‑action and Vision–Language–Action (VLA) baselines across <b>hand‑pose forecasting</b>, <b>single‑arm</b> and <b>humanoid</b> manipulation, and <b>real‑world</b> deployment.</p>
+      <p class="kw"><span>Latent Action</span><span>Action‑Free Video</span><span>Cross‑Embodiment Manipulation</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== HIGHLIGHTS ============================== -->
+<section id="highlights" class="reveal">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">02</span> Contributions</div>
+    <div class="cards">
+      <div class="card">
+        <div class="cnum">01</div>
+        <h3>Continuous latent action policy</h3>
+        <p>We model the latent action as a continuous flow conditioned on the current observation, distilling the teacher posterior with a flow‑adaptive objective. It preserves the multimodal distribution a discrete codebook cannot, and acts without future frames, shortening the path from action‑free pretraining to control.</p>
+      </div>
+      <div class="card">
+        <div class="cnum">02</div>
+        <h3>Label‑free motion supervision</h3>
+        <p>A motion target derived from cross‑frame correspondences in a frozen ViT grounds the latent in task‑relevant dynamics and isolates it from camera and appearance changes, with no extra factorization stage or optical flow.</p>
+      </div>
+      <div class="card">
+        <div class="cnum">03</div>
+        <h3>Cross‑embodiment adaptation</h3>
+        <p>The continuous latent is an embodiment‑agnostic action space shared across human and multi‑robot video. A new robot reuses it with only a fresh action decoder and light finetuning, not per‑robot retraining.</p>
+      </div>
+      <div class="card">
+        <div class="cnum">04</div>
+        <h3>Compact yet strong</h3>
+        <p>At just <b>1.1B</b> parameters (590M trainable), UniLAP matches or beats latent‑action and VLA baselines up to 7B, across hand‑pose forecasting, single‑arm, humanoid, and real‑world manipulation.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== METHOD ============================== -->
+<section id="method" class="reveal">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">03</span> Method</div>
+    <h2 class="h">A continuous latent, distilled then decoded</h2>
+    <p class="lead muted">UniLAP learns a shared latent policy from action‑free video across embodiments. Three components train in two stages: a continuous flow‑matching <b>latent policy</b>, a label‑free <b>motion‑supervision</b> target, and a per‑embodiment <b>action decoder</b>.</p>
+
+    <figure>
+      <div class="figframe"><video class="autovid" muted playsinline preload="none" poster="assets/image/method_poster.png" aria-label="UniLAP two-stage architecture animation" style="display:block;width:100%;aspect-ratio:3140/1544"><source src="assets/video/method_anim.mp4" type="video/mp4" /><img src="assets/image/overview.png" alt="UniLAP two-stage architecture overview" style="width:100%;display:block" /></video></div>
+      <figcaption><b>Overview.</b> <b>Stage I</b> pretrains a flow‑matching latent policy on action‑free video under a flow‑matching loss; a frozen LAM teacher's posterior is distilled via a <b>flow‑adaptive</b> distillation term, and a cross‑frame correspondence target supervises the motion predictor to regularize the latent. <b>Stage II</b> attaches a per‑embodiment decoder and finetunes the policy to map the latent to executable actions.</figcaption>
+    </figure>
+
+    <div class="phase-grid">
+      <div class="phase">
+        <span class="tag">Stage I · Action‑free pretraining</span>
+        <h3>Continuous latent action policy</h3>
+        <p>Frozen DINOv2 (fine spatial) and SigLIP2 (vision–language) features plus a Flan‑T5 instruction embedding condition a flow‑matching Transformer, AdaLN on the flow timestep, per‑block cross‑attention. It predicts a horizon‑16 latent chunk from the <b>current</b> observation, with no access to future frames.</p>
+        <ul>
+          <li>Distils a continuous LAM teacher (DreamDojo) posterior</li>
+          <li><b>Flow‑adaptive</b> distillation preserves multimodality</li>
+          <li>Label‑free motion target from frozen‑ViT correspondences</li>
+          <li>Pretrained on human (EgoDex) + multi‑robot video</li>
+        </ul>
+      </div>
+      <div class="phase">
+        <span class="tag">Stage II · Embodiment adaptation</span>
+        <h3>Per‑embodiment action decoder</h3>
+        <p>A decoder maps the latent chunk to executable commands: proprioception modulates every step via AdaLN, while patch tokens enter through cross‑attention. It is trained from scratch with the policy lightly finetuned, no per‑robot re‑pretraining.</p>
+        <ul>
+          <li>Latent stays embodiment‑agnostic and reusable</li>
+          <li>Heads for WidowX / Google robot / GR1 / xArm7</li>
+          <li>Joint‑space or end‑effector output</li>
+          <li><b>1.1B</b> total parameters · <b>590M</b> trainable</li>
+        </ul>
+      </div>
+    </div>
+
+    <blockquote class="pullquote">Prior pipelines quantize the latent into a discrete codebook; UniLAP models it as a continuous flow, preserving the multimodal distribution manipulation requires, and acting without future frames at inference.</blockquote>
+  </div>
+</section>
+
+<!-- ============================== REAL ROBOT (lead result) ============================== -->
+<section id="real-robot" class="reveal">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">04</span> Real‑Robot Deployment</div>
+    <h2 class="h">A real xArm7, three tabletop tasks</h2>
+    <p class="lead muted">We deploy on a 7‑DoF UFACTORY xArm7 with a single fixed third‑person ZED&nbsp;2i view, comparing against <b>&pi;<sub>0.5</sub></b> on three tabletop tasks. Following our recipe, we collect 50 teleoperated demonstrations per task, fit an 8‑DoF joint‑space decoder from scratch, and finetune the latent policy. The policy runs chunked control through a two‑process ZMQ client–server loop (observation in, a 16‑step joint chunk out), with no inverse kinematics or camera calibration.</p>
+
+    <figure>
+      <div class="figframe"><img src="assets/image/real_world.png" alt="Real-world xArm7 setup and per-task success rates" loading="lazy" /></div>
+      <figcaption><b>Real‑world setup &amp; results.</b> <i>Left</i>, the single‑camera xArm7 tabletop workspace. <i>Right</i>, per‑task and average success rate over 50 rollouts vs. &pi;<sub>0.5</sub>. Tasks escalate in placement precision: a tolerant drop, aligned cup nesting, and a tight cube stack against soft‑contact rebound.</figcaption>
+    </figure>
+
+    <p class="vgroup">Successful rollouts · buttons switch the object’s initial position</p>
+    <div class="grid g2">
+      <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="real_pineapple_init1.mp4">Init A</button><button class="vtab" data-file="real_pineapple_init2.mp4">Init B</button><button class="vtab" data-file="real_pineapple_init3.mp4">Init C</button><button class="vtab" data-file="real_pine_distract.mp4">+ distractor</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/real_pineapple_init1_poster.png" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;display:block"></video><figcaption><span class="vtag">T1</span> &nbsp;pineapple → bowl</figcaption></figure>
+      <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="real_cubes_init1.mp4">Init A</button><button class="vtab" data-file="real_cubes_init2.mp4">Init B</button><button class="vtab" data-file="real_cubes_init3.mp4">Init C</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/real_cubes_init1_poster.png" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;display:block"></video><figcaption><span class="vtag">T2</span> &nbsp;stack white on blue</figcaption></figure>
+      <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="real_cups_init1.mp4">Init A</button><button class="vtab" data-file="real_cups_init2.mp4">Init B</button><button class="vtab" data-file="real_cups_init3.mp4">Init C</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/real_cups_init1_poster.png" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;display:block"></video><figcaption><span class="vtag">T3</span> &nbsp;stack red on yellow cup</figcaption></figure>
+      <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="real_ood_take1.mp4">Red cup A</button><button class="vtab" data-file="real_ood_take2.mp4">Red cup B</button><button class="vtab" data-file="real_ood_greencup.mp4">Green cup</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/real_ood_take1_poster.png" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;display:block"></video><figcaption><span class="vtag">OOD</span> &nbsp;cup → bowl</figcaption></figure>
+    </div>
+
+    <div class="subblock">
+      <div class="table-wrap">
+        <table class="bt">
+          <caption>Success rate (%) over <b>N = 50</b> rollouts per task; raw successes in parentheses. Best per task in bold.</caption>
+          <thead>
+            <tr><th>Method</th><th>Pineapple → Bowl</th><th>Stack Cubes</th><th>Stack Cups</th><th>Avg.</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>&pi;<sub>0.5</sub> (baseline)</td><td>42 <span class="small">21/50</span></td><td class="best">12 <span class="small">6/50</span></td><td>14 <span class="small">7/50</span></td><td>22.7</td></tr>
+            <tr><td>UniLAP (ours)</td><td class="best">46 <span class="small">23/50</span></td><td>10 <span class="small">5/50</span></td><td class="best">28 <span class="small">14/50</span></td><td class="best">28.0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Each method is evaluated over 50 rollouts per task on the physical xArm7.</p>
+    </div>
+
+    <div class="callout">
+      <span class="badge">Out&nbsp;of&nbsp;Distribution</span>
+      <p>Given the unseen instruction <b>“pick up the red cup and put it into the bowl”</b>, a known object (the red cup, seen only in cup‑stacking) with a known target (the bowl, seen only in the pineapple task) in a combination <b>absent from training</b>, UniLAP reaches <b>23%</b>, evidence that it recombines learned grounding and skills rather than memorising per‑task trajectories.</p>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="v">188<small> ms</small></div><div class="k">Inference round‑trip (median)</div></div>
+      <div class="stat"><div class="v">~4.5<small> Hz</small></div><div class="k">Achieved action rate</div></div>
+      <div class="stat"><div class="v">200<small> Hz</small></div><div class="k">Joint‑servo command rate</div></div>
+      <div class="stat"><div class="v">150<small> total</small></div><div class="k">Teleoperated demonstrations</div></div>
+    </div>
+    <p class="note">Deploy: NVIDIA RTX PRO 5000 Laptop GPU · 4 flow‑matching steps · 16‑step open‑loop horizon. Latency is task‑independent across all rollouts.</p>
+  </div>
+</section>
+
+<!-- ============================== BENCHMARKS ============================== -->
+<section id="benchmarks" class="reveal">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">05</span> Benchmarks</div>
+    <h2 class="h">Cross‑embodiment adaptation from a shared latent</h2>
+    <p class="lead muted">The same action‑free pretraining is shared across embodiments; each one adds only a fresh action decoder and a light policy finetune, no per‑robot retraining. At <b>1.1B</b> parameters, UniLAP compares favorably with latent‑action and VLA baselines up to 7B.</p>
+
+    <!-- SIMPLER -->
+    <div class="subblock">
+      <h3 class="sub">SimplerEnv &mdash; WidowX &amp; Google Robot</h3>
+      <p class="muted">On <b>WidowX</b>, UniLAP scores <b>52.1%</b>, exceeding the action‑free baselines UniVLA (+4.2) and mimic‑video (+5.2). On <b>Google Robot</b> it reaches <b>59.6%</b> under Visual Matching and <b>57.1%</b> under the perturbed Variant Aggregation, a degradation of only 2.5, which we trace to the appearance‑invariant motion supervision.</p>
+      <p class="vgroup">WidowX · 4 tasks</p>
+      <div class="grid g4">
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_widowx_spoon_1.mp4">Ep 1</button><button class="vtab" data-file="sim_widowx_spoon_2.mp4">Ep 2</button><button class="vtab" data-file="sim_widowx_spoon_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_widowx_spoon_poster.png" style="width:100%;aspect-ratio:4/3;border-radius:14px;display:block"></video><figcaption>Put spoon on table cloth</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_widowx_carrot_1.mp4">Ep 1</button><button class="vtab" data-file="sim_widowx_carrot_2.mp4">Ep 2</button><button class="vtab" data-file="sim_widowx_carrot_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_widowx_carrot_poster.png" style="width:100%;aspect-ratio:4/3;border-radius:14px;display:block"></video><figcaption>Put carrot on plate</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_widowx_stack_1.mp4">Ep 1</button><button class="vtab" data-file="sim_widowx_stack_2.mp4">Ep 2</button><button class="vtab" data-file="sim_widowx_stack_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_widowx_stack_poster.png" style="width:100%;aspect-ratio:4/3;border-radius:14px;display:block"></video><figcaption>Stack green on yellow block</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_widowx_eggplant_1.mp4">Ep 1</button><button class="vtab" data-file="sim_widowx_eggplant_2.mp4">Ep 2</button><button class="vtab" data-file="sim_widowx_eggplant_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_widowx_eggplant_poster.png" style="width:100%;aspect-ratio:4/3;border-radius:14px;display:block"></video><figcaption>Put eggplant in basket</figcaption></figure>
+      </div>
+      <p class="vgroup">Google Robot · Visual Matching (VM)</p>
+      <div class="grid g4">
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_vm_coke_up.mp4">up</button><button class="vtab" data-file="sim_google_vm_coke_lr.mp4">lr</button><button class="vtab" data-file="sim_google_vm_coke_laid.mp4">laid</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_google_vm_coke_poster.png" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Pick coke can</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_vm_move_near_1.mp4">Ep 1</button><button class="vtab" data-file="sim_google_vm_move_near_2.mp4">Ep 2</button><button class="vtab" data-file="sim_google_vm_move_near_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_google_vm_move_near_poster.png" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Move object near a target</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_vm_drawer_open_1.mp4">Ep 1</button><button class="vtab" data-file="sim_google_vm_drawer_open_2.mp4">Ep 2</button><button class="vtab" data-file="sim_google_vm_drawer_open_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_google_vm_drawer_open_poster.png" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Open the drawer</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_vm_drawer_close_1.mp4">Ep 1</button><button class="vtab" data-file="sim_google_vm_drawer_close_2.mp4">Ep 2</button><button class="vtab" data-file="sim_google_vm_drawer_close_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_google_vm_drawer_close_poster.png" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Close the drawer</figcaption></figure>
+      </div>
+      <p class="vgroup">Google Robot · Variant Aggregation (VA)</p>
+      <div class="grid g4">
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_va_coke_up.mp4">up</button><button class="vtab" data-file="sim_google_va_coke_lr.mp4">lr</button><button class="vtab" data-file="sim_google_va_coke_laid.mp4">laid</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_google_va_coke_poster.png" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Pick coke can</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_va_move_near_1.mp4">Ep 1</button><button class="vtab" data-file="sim_google_va_move_near_2.mp4">Ep 2</button><button class="vtab" data-file="sim_google_va_move_near_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_google_va_move_near_poster.png" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Move object near a target</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_va_drawer_open_1.mp4">Ep 1</button><button class="vtab" data-file="sim_google_va_drawer_open_2.mp4">Ep 2</button><button class="vtab" data-file="sim_google_va_drawer_open_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_google_va_drawer_open_poster.png" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Open the drawer</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_va_drawer_close_1.mp4">Ep 1</button><button class="vtab" data-file="sim_google_va_drawer_close_2.mp4">Ep 2</button><button class="vtab" data-file="sim_google_va_drawer_close_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_google_va_drawer_close_poster.png" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Close the drawer</figcaption></figure>
+      </div>
+    </div>
+
+    <!-- RoboCasa GR1 -->
+    <div class="subblock">
+      <h3 class="sub">RoboCasa‑GR1 &mdash; humanoid manipulation</h3>
+      <p class="muted">A model pretrained on human + multi‑robot video, transferred to a <b>GR1 humanoid</b> on six articulated, multi‑step RoboCasa tasks (50 episodes each). Rather than learning the policy end‑to‑end on labeled actions, UniLAP adapts its action‑free latent, a low‑cost transfer to a high‑DoF embodiment that reaches a <b>42.7%</b> average, peaking at <b>78%</b> on Can&nbsp;→&nbsp;Drawer.</p>
+      <div class="grid g3">
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="gr1_bottle_cabinet_1.mp4">Ep 1</button><button class="vtab" data-file="gr1_bottle_cabinet_2.mp4">Ep 2</button><button class="vtab" data-file="gr1_bottle_cabinet_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/gr1_bottle_cabinet_poster.png" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Bottle → Cabinet</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="gr1_can_drawer_1.mp4">Ep 1</button><button class="vtab" data-file="gr1_can_drawer_2.mp4">Ep 2</button><button class="vtab" data-file="gr1_can_drawer_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/gr1_can_drawer_poster.png" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Can → Drawer</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="gr1_cup_drawer_1.mp4">Ep 1</button><button class="vtab" data-file="gr1_cup_drawer_2.mp4">Ep 2</button><button class="vtab" data-file="gr1_cup_drawer_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/gr1_cup_drawer_poster.png" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Cup → Drawer</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="gr1_milk_microwave_1.mp4">Ep 1</button><button class="vtab" data-file="gr1_milk_microwave_2.mp4">Ep 2</button><button class="vtab" data-file="gr1_milk_microwave_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/gr1_milk_microwave_poster.png" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Milk → Microwave</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="gr1_potato_microwave_1.mp4">Ep 1</button><button class="vtab" data-file="gr1_potato_microwave_2.mp4">Ep 2</button><button class="vtab" data-file="gr1_potato_microwave_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/gr1_potato_microwave_poster.png" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Potato → Microwave</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="gr1_wine_cabinet_1.mp4">Ep 1</button><button class="vtab" data-file="gr1_wine_cabinet_2.mp4">Ep 2</button><button class="vtab" data-file="gr1_wine_cabinet_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/gr1_wine_cabinet_poster.png" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Wine → Cabinet</figcaption></figure>
+      </div>
+    </div>
+
+    <!-- Hand-pose forecasting -->
+    <div class="subblock">
+      <h3 class="sub">Hand‑Pose Forecasting &mdash; EgoDex</h3>
+      <p class="muted">On EgoDex we forecast bimanual hand pose and report Average / Final Displacement Error (ADE / FDE, metres, lower is better), best‑of-<i>S</i> across <i>S</i> samples. UniLAP posts <b>0.029 / 0.038&nbsp;m</b> at <i>S</i>=10, and its relative ADE margin over the strongest X‑IL baseline widens from 13% at <i>S</i>=1 to <b>24%</b> at <i>S</i>=10, a gain that comes from modeling actions in a latent space, not from flow matching alone.</p>
+      <p class="vgroup">Predicted hand‑pose rollouts &middot; three EgoDex tasks (1.6&nbsp;s keypoint trajectories overlaid on the egocentric frame)</p>
+      <div class="grid g3">
+        <figure class="vcard"><video class="autovid" muted loop playsinline preload="metadata" poster="assets/image/egodex_furniture_poster.png" style="width:100%;aspect-ratio:694/512;object-fit:cover;border-radius:14px;display:block"><source src="assets/video/egodex_furniture.mp4" type="video/mp4"></video><figcaption>Assemble furniture</figcaption></figure>
+        <figure class="vcard"><video class="autovid" muted loop playsinline preload="metadata" poster="assets/image/egodex_stack_poster.png" style="width:100%;aspect-ratio:694/512;object-fit:cover;border-radius:14px;display:block"><source src="assets/video/egodex_stack.mp4" type="video/mp4"></video><figcaption>Stack</figcaption></figure>
+        <figure class="vcard"><video class="autovid" muted loop playsinline preload="metadata" poster="assets/image/egodex_pickplace_poster.png" style="width:100%;aspect-ratio:694/512;object-fit:cover;border-radius:14px;display:block"><source src="assets/video/egodex_pickplace.mp4" type="video/mp4"></video><figcaption>Vertical pick &amp; place</figcaption></figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== ANALYSIS / ABLATION ============================== -->
+<section id="analysis" class="reveal">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">06</span> Analysis</div>
+    <h2 class="h">What the latent captures</h2>
+    <p class="lead muted">Two probes indicate the latent encodes <i>action</i>, not appearance: it reconstructs the future from the <i>current</i> frame alone, and it tracks <i>what</i> an instruction asks and <i>where</i>, not its surface wording.</p>
+    <div class="probe-grid">
+      <figure><div class="figframe"><img src="assets/image/z_pred_quality.png" alt="Future-frame reconstruction: teacher vs. ours" loading="lazy" /></div><figcaption><b>Teacher fidelity.</b> From the current frame alone (no future), the latent reconstructs the future at close to the LAM teacher's PSNR.</figcaption></figure>
+      <figure><div class="figframe"><img src="assets/image/lang_sensitivity.png" alt="Latent shift grows with the semantic distance of the instruction edit" loading="lazy" /></div><figcaption><b>Language sensitivity.</b> The latent barely moves under a paraphrase or object swap, but shifts <b>2.7&times;</b> / <b>4.3&times;</b> under verb / location edits and <b>17.5&times;</b> when language is removed.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== BIBTEX ============================== -->
+<section id="bibtex" class="reveal">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">07</span> Citation</div>
+    <h2 class="h" style="margin-bottom:22px">BibTeX</h2>
+    <div class="bibwrap">
+      <div class="bibhead">
+        <span>cite this work</span>
+        <button class="copy" id="copyBtn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span id="copyLabel">Copy</span>
+        </button>
+      </div>
+<pre class="bib" id="bibtex">@article{unilap2026,
+  title   = {UniLAP: A Unified Latent Action Policy for Cross‑Embodiment Manipulation},
+  author  = {Lei Yao and Qiao Feng and Mutian Tong and Qihao Yun and Lap-Pui Chau and Lingjie Liu},
+  journal = {Under Review},
+  year    = {2026},
+}</pre>
+    </div>
+    <p class="note">Citation venue and key are placeholders. Replace with the final venue and key on publication.</p>
+  </div>
+</section>
+
+<!-- ============================== FOOTER ============================== -->
+<footer>
+  <div class="wrap">
+    <div>
+      <strong style="color:var(--ink-soft)">UniLAP</strong> · A Unified Latent Action Policy for Cross‑Embodiment Manipulation
+    </div>
+    <div>
+      Project page · <a href="#top">back to top ↑</a> · <span style="color:var(--ink-faint)">© 2026 · template hand‑built for this paper</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* reveal on scroll */
+(function(){
+  var els=document.querySelectorAll('.reveal');
+  if(!('IntersectionObserver'in window)){els.forEach(function(e){e.classList.add('is-visible')});return}
+  var io=new IntersectionObserver(function(en){
+    en.forEach(function(x){if(x.isIntersecting){x.target.classList.add('is-visible');io.unobserve(x.target)}})
+  },{rootMargin:'0px 0px -10% 0px',threshold:.08});
+  els.forEach(function(e){io.observe(e)});
+})();
+
+/* active nav link on scroll */
+(function(){
+  var links=Array.prototype.slice.call(document.querySelectorAll('.nav-links a'));
+  var map={};links.forEach(function(a){var id=a.getAttribute('href');if(id&&id.indexOf('#')===0){var s=document.querySelector(id);if(s)map[id]=s}});
+  var ids=Object.keys(map);if(!ids.length||!('IntersectionObserver'in window))return;
+  var io=new IntersectionObserver(function(en){
+    en.forEach(function(x){
+      if(x.isIntersecting){
+        links.forEach(function(a){a.classList.toggle('active',map[a.getAttribute('href')]===x.target)})
+      }
+    })
+  },{rootMargin:'-45% 0px -50% 0px',threshold:0});
+  ids.forEach(function(id){io.observe(map[id])});
+})();
+
+/* copy BibTeX */
+(function(){
+  var btn=document.getElementById('copyBtn'),pre=document.getElementById('bibtex'),lbl=document.getElementById('copyLabel');
+  if(!btn)return;
+  btn.addEventListener('click',function(){
+    var t=pre.innerText;
+    var done=function(){btn.classList.add('ok');lbl.textContent='Copied!';setTimeout(function(){btn.classList.remove('ok');lbl.textContent='Copy'},1600)};
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,done)}
+    else{var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta);done()}
+  });
+})();
+
+/* auto-play teaser / method video when scrolled into view */
+(function(){
+  var vids=document.querySelectorAll('.autovid');if(!vids.length)return;
+  if(!('IntersectionObserver'in window)){vids.forEach(function(v){try{v.play()}catch(e){}});return}
+  var vo=new IntersectionObserver(function(en){
+    en.forEach(function(x){var v=x.target;
+      if(x.isIntersecting){try{v.currentTime=0}catch(e){}v.play().catch(function(){})}else{v.pause()}})
+  },{threshold:0.35});
+  vids.forEach(function(v){vo.observe(v)});
+})();
+
+/* per-task take switcher (object initial position) */
+(function(){
+  document.querySelectorAll(".vtabs").forEach(function(g){
+    var fig=g.closest(".vcard"),btns=g.querySelectorAll(".vtab");
+    function load(b){
+      btns.forEach(function(x){x.classList.toggle("is-on",x===b)});
+      var file="assets/video/"+b.getAttribute("data-file");
+      var vid=fig.querySelector("video.takevid");
+      if(vid){
+        vid.style.opacity="0";
+        vid.setAttribute("src",file); vid.load();
+        var on=function(){vid.style.opacity="1"; vid.play().catch(function(){}); vid.removeEventListener("loadeddata",on);};
+        vid.addEventListener("loadeddata",on);
+      } else {var fn=fig.querySelector(".fname"); if(fn)fn.textContent=file;}
+    }
+    btns.forEach(function(b){b.addEventListener("click",function(){load(b)})});
+    load(g.querySelector(".vtab.is-on")||btns[0]);
+  });
+})();
+</script>
+</body>
+</html>
