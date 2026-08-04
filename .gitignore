@@ -1,0 +1,27 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+
+# Python (the code release lands at the repo root later)
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Training and evaluation artifacts
+exp/
+results/
+wandb/
+*.ckpt
+*.pth
+*.log
+
+# Datasets and caches
+data/
+checkpoints/*
+!checkpoints/README.md
