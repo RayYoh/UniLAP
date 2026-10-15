@@ -2,6 +2,10 @@
 
 Project page: https://rayyoh.github.io/UniLAP/
 
+Paper: [arXiv](https://arxiv.org/abs/2610.16969) · [PDF](https://arxiv.org/pdf/2610.16969).
+
+Pretrained checkpoints: [Hugging Face](https://huggingface.co/RayYoh/UniLAP).
+
 The code release is in preparation and will land in this repository.
 
 ## Acknowledgements

@@ -113,6 +113,7 @@ body{
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
 }
 img,video{max-width:100%;display:block}
+img{height:auto}
 a{color:var(--accent);text-decoration:none}
 a:hover{color:var(--accent-strong)}
 h1,h2,h3{font-family:var(--font-display);font-weight:600;letter-spacing:-.018em;line-height:1.08;margin:0}
@@ -208,6 +209,8 @@ h1.title em{font-style:italic;color:var(--accent);font-weight:500}
 .btn:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--ink)}
 .btn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
 .btn.primary:hover{background:var(--accent-strong);border-color:var(--accent-strong);box-shadow:0 10px 26px rgba(79,70,229,.32)}
+.btn:disabled{font-family:var(--font-body);color:var(--ink-faint);cursor:default;transform:none;box-shadow:none;border-color:var(--line-strong)}
+.btn .soon{font-size:11px;font-weight:500}
 
 .teaser{margin-top:14px}
 figure{margin:0}
@@ -358,7 +361,7 @@ footer a:hover{color:var(--accent)}
 <!-- ============================== NAV ============================== -->
 <nav>
   <div class="nav-in">
-    <a class="brand" href="#top"><img class="brand-logo" src="assets/image/logo.png" alt="" />UniLAP</a>
+    <a class="brand" href="#top"><img width="200" height="200" class="brand-logo" src="assets/image/logo.png" alt="" />UniLAP</a>
     <div class="nav-links">
       <a href="#abstract">Abstract</a>
       <a href="#method">Method</a>
@@ -398,13 +401,13 @@ footer a:hover{color:var(--accent)}
       <p class="affil" style="font-size:.82em;opacity:.75;margin-top:3px"><sup>&dagger;</sup>&nbsp;Work done during a visit to the University of Pennsylvania.</p>
     </div>
 
-    <!-- Paper / arXiv / Video / Models are still placeholders (href="#"). -->
+    <!-- Research resources. -->
     <div class="links rise d4">
-      <a class="btn primary" href="#" aria-label="Paper PDF">
+      <a class="btn primary" href="https://arxiv.org/pdf/2610.16969" aria-label="Paper PDF">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
         Paper
       </a>
-      <a class="btn" href="#" aria-label="arXiv">
+      <a class="btn" href="https://arxiv.org/abs/2610.16969" aria-label="arXiv">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
         arXiv
       </a>
@@ -412,18 +415,14 @@ footer a:hover{color:var(--accent)}
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5A11.5 11.5 0 0 0 23.5 12C23.5 5.7 18.3.5 12 .5z"/></svg>
         Code
       </a>
-      <a class="btn" href="#" aria-label="Video">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>
-        Video
-      </a>
-      <a class="btn" href="#" aria-label="Models">
+      <a class="btn" href="https://huggingface.co/RayYoh/UniLAP" aria-label="Models on Hugging Face">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 9 5-9 5-9-5 9-5z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/></svg>
         Models
       </a>
     </div>
 
     <figure class="teaser rise d5">
-      <div class="figframe"><video class="autovid" muted playsinline preload="none" poster="assets/image/teaser_poster.webp" aria-label="UniLAP teaser animation" style="display:block;width:100%;aspect-ratio:2612/1208;border-radius:7px"><source src="assets/video/teaser_anim.mp4" type="video/mp4" /></video></div>
+      <div class="figframe"><video class="autovid" muted playsinline preload="none" poster="assets/image/teaser_poster.webp" aria-label="UniLAP teaser animation" style="display:block;width:100%;aspect-ratio:2612/1208;border-radius:7px"><source data-src="assets/video/teaser_anim.mp4" type="video/mp4" /></video></div>
       <figcaption><b>Left:</b> prior pipelines quantize the latent into a discrete codebook predicted autoregressively by a VLM. <b>Middle:</b> UniLAP models the latent as a continuous flow distilled from a frozen LAM teacher, acting without future frames at inference. <b>Right:</b> the same pretrained latent adapts to hand‑pose forecasting, single‑arm, humanoid, and real‑robot manipulation, with consistent gains.</figcaption>
     </figure>
   </div>
@@ -434,8 +433,8 @@ footer a:hover{color:var(--accent)}
   <div class="wrap">
     <div class="eyebrow"><span class="num">01</span> Abstract</div>
     <div class="abstract lead">
-      <p class="drop">Latent Action Models (LAMs) capture manipulation priors from <b>action‑free video</b>, but <b>discrete</b> latents impose a granularity bottleneck that limits the actions they can represent. Recent continuous alternatives mitigate this, yet they are typically used as proxies for world modeling and require a further <b>planning step</b> to produce executable actions. We introduce <b>UniLAP</b>, a unified <b>continuous</b> latent‑action policy that models the latent space via <b>flow matching</b> and bypasses any reliance on future frames during inference.</p>
-      <p>By distilling a LAM teacher with a <b>flow‑adaptive objective</b>, UniLAP inherently retains the multimodal action distribution. To decouple the action representation from task‑irrelevant appearance, we extract a <b>label‑free motion target</b> that isolates kinematic cues from spurious visual dynamics. With this embodiment‑agnostic latent space, UniLAP adapts to new embodiments with only a fresh decoder and light finetuning. Pretrained on multi‑source videos at a compact <b>1.1B</b>-parameter scale, it outperforms state‑of‑the‑art latent‑action and Vision–Language–Action (VLA) baselines across <b>hand‑pose forecasting</b>, <b>single‑arm</b> and <b>humanoid</b> manipulation, and <b>real‑world</b> deployment.</p>
+      <p class="drop">Latent Action Models (LAMs) can capture manipulation priors from <b>action-free videos</b>, but <b>discrete</b> latents usually impose a granularity bottleneck, limiting their ability to represent fine-grained action. Recent continuous alternatives mitigate this, but they are typically used as proxies for world modeling and require a further <b>planning step</b> to produce executable actions. We thus introduce <b>UniLAP</b>, a unified <b>continuous</b> latent-action policy that models the latent space via <b>flow matching</b> and bypasses reliance on future frames during inference.</p>
+      <p>By distilling a LAM teacher with a <b>flow-adaptive objective</b>, UniLAP inherits the teacher's action representation while retaining the multimodal distribution of feasible behaviors. To decouple latent representations from task-irrelevant appearance, we extract a <b>label-free motion target</b> to isolate relevant kinematic cues from spurious visual dynamics. With the established embodiment-agnostic latent manifold, UniLAP can be easily adapted to novel platforms. Pretrained on multi-source videos at a compact <b>1.1B</b> parameter scale, UniLAP outperforms state-of-the-art latent-action and Vision-Language-Action (VLA) baselines across <b>hand pose forecasting</b>, <b>single-arm</b> and <b>humanoid</b> manipulation, and <b>real-world</b> deployment.</p>
       <p class="kw"><span>Latent Action</span><span>Action‑Free Video</span><span>Cross‑Embodiment Manipulation</span></p>
     </div>
   </div>
@@ -478,7 +477,7 @@ footer a:hover{color:var(--accent)}
     <p class="lead muted">UniLAP learns a shared latent policy from action‑free video across embodiments. Three components train in two stages: a continuous flow‑matching <b>latent policy</b>, a label‑free <b>motion‑supervision</b> target, and a per‑embodiment <b>action decoder</b>.</p>
 
     <figure>
-      <div class="figframe"><video class="autovid" muted playsinline preload="none" poster="assets/image/method_poster.webp" aria-label="UniLAP two-stage architecture animation" style="display:block;width:100%;aspect-ratio:3140/1544"><source src="assets/video/method_anim.mp4" type="video/mp4" /><img src="assets/image/overview.png" alt="UniLAP two-stage architecture overview" style="width:100%;display:block" /></video></div>
+      <div class="figframe"><video class="autovid" muted playsinline preload="none" poster="assets/image/method_poster.webp" aria-label="UniLAP two-stage architecture animation" style="display:block;width:100%;aspect-ratio:3140/1544"><source data-src="assets/video/method_anim.mp4" type="video/mp4" /><img width="1500" height="764" src="assets/image/overview.png" alt="UniLAP two-stage architecture overview" style="width:100%;display:block" /></video></div>
       <figcaption><b>Overview.</b> <b>Stage I</b> pretrains a flow‑matching latent policy on action‑free video under a flow‑matching loss; a frozen LAM teacher's posterior is distilled via a <b>flow‑adaptive</b> distillation term, and a cross‑frame correspondence target supervises the motion predictor to regularize the latent. <b>Stage II</b> attaches a per‑embodiment decoder and finetunes the policy to map the latent to executable actions.</figcaption>
     </figure>
 
@@ -519,16 +518,16 @@ footer a:hover{color:var(--accent)}
     <p class="lead muted">We deploy on a 7‑DoF UFACTORY xArm7 with a single fixed third‑person ZED&nbsp;2i view, comparing against <b>&pi;<sub>0.5</sub></b> on three tabletop tasks. Following our recipe, we collect 50 teleoperated demonstrations per task, fit an 8‑DoF joint‑space decoder from scratch, and finetune the latent policy. The policy runs chunked control through a two‑process ZMQ client–server loop (observation in, a 16‑step joint chunk out), with no inverse kinematics or camera calibration.</p>
 
     <figure>
-      <div class="figframe"><img src="assets/image/real_world.png" alt="Real-world xArm7 setup and per-task success rates" loading="lazy" /></div>
+      <div class="figframe"><img width="1500" height="591" src="assets/image/real_world.png" alt="Real-world xArm7 setup and per-task success rates" loading="lazy" /></div>
       <figcaption><b>Real‑world setup &amp; results.</b> <i>Left</i>, the single‑camera xArm7 tabletop workspace. <i>Right</i>, per‑task and average success rate over 50 rollouts vs. &pi;<sub>0.5</sub>. Tasks escalate in placement precision: a tolerant drop, aligned cup nesting, and a tight cube stack against soft‑contact rebound.</figcaption>
     </figure>
 
     <p class="vgroup">Successful rollouts · buttons switch the object’s initial position</p>
     <div class="grid g2">
-      <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="real_pineapple_init1.mp4">Init A</button><button class="vtab" data-file="real_pineapple_init2.mp4">Init B</button><button class="vtab" data-file="real_pineapple_init3.mp4">Init C</button><button class="vtab" data-file="real_pine_distract.mp4">+ distractor</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/real_pineapple_init1_poster.webp" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;display:block"></video><figcaption><span class="vtag">T1</span> &nbsp;pineapple → bowl</figcaption></figure>
-      <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="real_cubes_init1.mp4">Init A</button><button class="vtab" data-file="real_cubes_init2.mp4">Init B</button><button class="vtab" data-file="real_cubes_init3.mp4">Init C</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/real_cubes_init1_poster.webp" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;display:block"></video><figcaption><span class="vtag">T2</span> &nbsp;stack white on blue</figcaption></figure>
-      <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="real_cups_init1.mp4">Init A</button><button class="vtab" data-file="real_cups_init2.mp4">Init B</button><button class="vtab" data-file="real_cups_init3.mp4">Init C</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/real_cups_init1_poster.webp" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;display:block"></video><figcaption><span class="vtag">T3</span> &nbsp;stack red on yellow cup</figcaption></figure>
-      <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="real_ood_take1.mp4">Red cup A</button><button class="vtab" data-file="real_ood_take2.mp4">Red cup B</button><button class="vtab" data-file="real_ood_greencup.mp4">Green cup</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/real_ood_take1_poster.webp" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;display:block"></video><figcaption><span class="vtag">OOD</span> &nbsp;cup → bowl</figcaption></figure>
+      <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="real_pineapple_init1.mp4">Init A</button><button class="vtab" data-file="real_pineapple_init2.mp4">Init B</button><button class="vtab" data-file="real_pineapple_init3.mp4">Init C</button><button class="vtab" data-file="real_pine_distract.mp4">+ distractor</button></div><video class="takevid autovid" muted loop playsinline preload="none" poster="assets/image/real_pineapple_init1_poster.webp" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;display:block"></video><figcaption><span class="vtag">T1</span> &nbsp;pineapple → bowl</figcaption></figure>
+      <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="real_cubes_init1.mp4">Init A</button><button class="vtab" data-file="real_cubes_init2.mp4">Init B</button><button class="vtab" data-file="real_cubes_init3.mp4">Init C</button></div><video class="takevid autovid" muted loop playsinline preload="none" poster="assets/image/real_cubes_init1_poster.webp" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;display:block"></video><figcaption><span class="vtag">T2</span> &nbsp;stack white on blue</figcaption></figure>
+      <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="real_cups_init1.mp4">Init A</button><button class="vtab" data-file="real_cups_init2.mp4">Init B</button><button class="vtab" data-file="real_cups_init3.mp4">Init C</button></div><video class="takevid autovid" muted loop playsinline preload="none" poster="assets/image/real_cups_init1_poster.webp" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;display:block"></video><figcaption><span class="vtag">T3</span> &nbsp;stack red on yellow cup</figcaption></figure>
+      <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="real_ood_take1.mp4">Red cup A</button><button class="vtab" data-file="real_ood_take2.mp4">Red cup B</button><button class="vtab" data-file="real_ood_greencup.mp4">Green cup</button></div><video class="takevid autovid" muted loop playsinline preload="none" poster="assets/image/real_ood_take1_poster.webp" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;display:block"></video><figcaption><span class="vtag">OOD</span> &nbsp;cup → bowl</figcaption></figure>
     </div>
 
     <div class="subblock">
@@ -575,24 +574,24 @@ footer a:hover{color:var(--accent)}
       <p class="muted">On <b>WidowX</b>, UniLAP scores <b>52.1%</b>, exceeding the action‑free baselines UniVLA (+4.2) and mimic‑video (+5.2). On <b>Google Robot</b> it reaches <b>59.6%</b> under Visual Matching and <b>57.1%</b> under the perturbed Variant Aggregation, a degradation of only 2.5, which we trace to the appearance‑invariant motion supervision.</p>
       <p class="vgroup">WidowX · 4 tasks</p>
       <div class="grid g4">
-        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_widowx_spoon_1.mp4">Ep 1</button><button class="vtab" data-file="sim_widowx_spoon_2.mp4">Ep 2</button><button class="vtab" data-file="sim_widowx_spoon_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_widowx_spoon_poster.webp" style="width:100%;aspect-ratio:4/3;border-radius:14px;display:block"></video><figcaption>Put spoon on table cloth</figcaption></figure>
-        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_widowx_carrot_1.mp4">Ep 1</button><button class="vtab" data-file="sim_widowx_carrot_2.mp4">Ep 2</button><button class="vtab" data-file="sim_widowx_carrot_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_widowx_carrot_poster.webp" style="width:100%;aspect-ratio:4/3;border-radius:14px;display:block"></video><figcaption>Put carrot on plate</figcaption></figure>
-        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_widowx_stack_1.mp4">Ep 1</button><button class="vtab" data-file="sim_widowx_stack_2.mp4">Ep 2</button><button class="vtab" data-file="sim_widowx_stack_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_widowx_stack_poster.webp" style="width:100%;aspect-ratio:4/3;border-radius:14px;display:block"></video><figcaption>Stack green on yellow block</figcaption></figure>
-        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_widowx_eggplant_1.mp4">Ep 1</button><button class="vtab" data-file="sim_widowx_eggplant_2.mp4">Ep 2</button><button class="vtab" data-file="sim_widowx_eggplant_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_widowx_eggplant_poster.webp" style="width:100%;aspect-ratio:4/3;border-radius:14px;display:block"></video><figcaption>Put eggplant in basket</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_widowx_spoon_1.mp4">Ep 1</button><button class="vtab" data-file="sim_widowx_spoon_2.mp4">Ep 2</button><button class="vtab" data-file="sim_widowx_spoon_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="none" poster="assets/image/sim_widowx_spoon_poster.webp" style="width:100%;aspect-ratio:4/3;border-radius:14px;display:block"></video><figcaption>Put spoon on table cloth</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_widowx_carrot_1.mp4">Ep 1</button><button class="vtab" data-file="sim_widowx_carrot_2.mp4">Ep 2</button><button class="vtab" data-file="sim_widowx_carrot_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="none" poster="assets/image/sim_widowx_carrot_poster.webp" style="width:100%;aspect-ratio:4/3;border-radius:14px;display:block"></video><figcaption>Put carrot on plate</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_widowx_stack_1.mp4">Ep 1</button><button class="vtab" data-file="sim_widowx_stack_2.mp4">Ep 2</button><button class="vtab" data-file="sim_widowx_stack_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="none" poster="assets/image/sim_widowx_stack_poster.webp" style="width:100%;aspect-ratio:4/3;border-radius:14px;display:block"></video><figcaption>Stack green on yellow block</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_widowx_eggplant_1.mp4">Ep 1</button><button class="vtab" data-file="sim_widowx_eggplant_2.mp4">Ep 2</button><button class="vtab" data-file="sim_widowx_eggplant_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="none" poster="assets/image/sim_widowx_eggplant_poster.webp" style="width:100%;aspect-ratio:4/3;border-radius:14px;display:block"></video><figcaption>Put eggplant in basket</figcaption></figure>
       </div>
       <p class="vgroup">Google Robot · Visual Matching (VM)</p>
       <div class="grid g4">
-        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_vm_coke_up.mp4">up</button><button class="vtab" data-file="sim_google_vm_coke_lr.mp4">lr</button><button class="vtab" data-file="sim_google_vm_coke_laid.mp4">laid</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_google_vm_coke_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Pick coke can</figcaption></figure>
-        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_vm_move_near_1.mp4">Ep 1</button><button class="vtab" data-file="sim_google_vm_move_near_2.mp4">Ep 2</button><button class="vtab" data-file="sim_google_vm_move_near_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_google_vm_move_near_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Move object near a target</figcaption></figure>
-        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_vm_drawer_open_1.mp4">Ep 1</button><button class="vtab" data-file="sim_google_vm_drawer_open_2.mp4">Ep 2</button><button class="vtab" data-file="sim_google_vm_drawer_open_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_google_vm_drawer_open_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Open the drawer</figcaption></figure>
-        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_vm_drawer_close_1.mp4">Ep 1</button><button class="vtab" data-file="sim_google_vm_drawer_close_2.mp4">Ep 2</button><button class="vtab" data-file="sim_google_vm_drawer_close_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_google_vm_drawer_close_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Close the drawer</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_vm_coke_up.mp4">up</button><button class="vtab" data-file="sim_google_vm_coke_lr.mp4">lr</button><button class="vtab" data-file="sim_google_vm_coke_laid.mp4">laid</button></div><video class="takevid autovid" muted loop playsinline preload="none" poster="assets/image/sim_google_vm_coke_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Pick coke can</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_vm_move_near_1.mp4">Ep 1</button><button class="vtab" data-file="sim_google_vm_move_near_2.mp4">Ep 2</button><button class="vtab" data-file="sim_google_vm_move_near_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="none" poster="assets/image/sim_google_vm_move_near_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Move object near a target</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_vm_drawer_open_1.mp4">Ep 1</button><button class="vtab" data-file="sim_google_vm_drawer_open_2.mp4">Ep 2</button><button class="vtab" data-file="sim_google_vm_drawer_open_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="none" poster="assets/image/sim_google_vm_drawer_open_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Open the drawer</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_vm_drawer_close_1.mp4">Ep 1</button><button class="vtab" data-file="sim_google_vm_drawer_close_2.mp4">Ep 2</button><button class="vtab" data-file="sim_google_vm_drawer_close_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="none" poster="assets/image/sim_google_vm_drawer_close_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Close the drawer</figcaption></figure>
       </div>
       <p class="vgroup">Google Robot · Variant Aggregation (VA)</p>
       <div class="grid g4">
-        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_va_coke_up.mp4">up</button><button class="vtab" data-file="sim_google_va_coke_lr.mp4">lr</button><button class="vtab" data-file="sim_google_va_coke_laid.mp4">laid</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_google_va_coke_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Pick coke can</figcaption></figure>
-        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_va_move_near_1.mp4">Ep 1</button><button class="vtab" data-file="sim_google_va_move_near_2.mp4">Ep 2</button><button class="vtab" data-file="sim_google_va_move_near_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_google_va_move_near_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Move object near a target</figcaption></figure>
-        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_va_drawer_open_1.mp4">Ep 1</button><button class="vtab" data-file="sim_google_va_drawer_open_2.mp4">Ep 2</button><button class="vtab" data-file="sim_google_va_drawer_open_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_google_va_drawer_open_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Open the drawer</figcaption></figure>
-        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_va_drawer_close_1.mp4">Ep 1</button><button class="vtab" data-file="sim_google_va_drawer_close_2.mp4">Ep 2</button><button class="vtab" data-file="sim_google_va_drawer_close_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/sim_google_va_drawer_close_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Close the drawer</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_va_coke_up.mp4">up</button><button class="vtab" data-file="sim_google_va_coke_lr.mp4">lr</button><button class="vtab" data-file="sim_google_va_coke_laid.mp4">laid</button></div><video class="takevid autovid" muted loop playsinline preload="none" poster="assets/image/sim_google_va_coke_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Pick coke can</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_va_move_near_1.mp4">Ep 1</button><button class="vtab" data-file="sim_google_va_move_near_2.mp4">Ep 2</button><button class="vtab" data-file="sim_google_va_move_near_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="none" poster="assets/image/sim_google_va_move_near_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Move object near a target</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_va_drawer_open_1.mp4">Ep 1</button><button class="vtab" data-file="sim_google_va_drawer_open_2.mp4">Ep 2</button><button class="vtab" data-file="sim_google_va_drawer_open_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="none" poster="assets/image/sim_google_va_drawer_open_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Open the drawer</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="sim_google_va_drawer_close_1.mp4">Ep 1</button><button class="vtab" data-file="sim_google_va_drawer_close_2.mp4">Ep 2</button><button class="vtab" data-file="sim_google_va_drawer_close_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="none" poster="assets/image/sim_google_va_drawer_close_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Close the drawer</figcaption></figure>
       </div>
     </div>
 
@@ -601,12 +600,12 @@ footer a:hover{color:var(--accent)}
       <h3 class="sub">RoboCasa‑GR1 &mdash; humanoid manipulation</h3>
       <p class="muted">A model pretrained on human + multi‑robot video, transferred to a <b>GR1 humanoid</b> on six articulated, multi‑step RoboCasa tasks (50 episodes each). Rather than learning the policy end‑to‑end on labeled actions, UniLAP adapts its action‑free latent, a low‑cost transfer to a high‑DoF embodiment that reaches a <b>42.7%</b> average, peaking at <b>78%</b> on Can&nbsp;→&nbsp;Drawer.</p>
       <div class="grid g3">
-        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="gr1_bottle_cabinet_1.mp4">Ep 1</button><button class="vtab" data-file="gr1_bottle_cabinet_2.mp4">Ep 2</button><button class="vtab" data-file="gr1_bottle_cabinet_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/gr1_bottle_cabinet_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Bottle → Cabinet</figcaption></figure>
-        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="gr1_can_drawer_1.mp4">Ep 1</button><button class="vtab" data-file="gr1_can_drawer_2.mp4">Ep 2</button><button class="vtab" data-file="gr1_can_drawer_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/gr1_can_drawer_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Can → Drawer</figcaption></figure>
-        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="gr1_cup_drawer_1.mp4">Ep 1</button><button class="vtab" data-file="gr1_cup_drawer_2.mp4">Ep 2</button><button class="vtab" data-file="gr1_cup_drawer_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/gr1_cup_drawer_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Cup → Drawer</figcaption></figure>
-        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="gr1_milk_microwave_1.mp4">Ep 1</button><button class="vtab" data-file="gr1_milk_microwave_2.mp4">Ep 2</button><button class="vtab" data-file="gr1_milk_microwave_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/gr1_milk_microwave_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Milk → Microwave</figcaption></figure>
-        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="gr1_potato_microwave_1.mp4">Ep 1</button><button class="vtab" data-file="gr1_potato_microwave_2.mp4">Ep 2</button><button class="vtab" data-file="gr1_potato_microwave_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/gr1_potato_microwave_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Potato → Microwave</figcaption></figure>
-        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="gr1_wine_cabinet_1.mp4">Ep 1</button><button class="vtab" data-file="gr1_wine_cabinet_2.mp4">Ep 2</button><button class="vtab" data-file="gr1_wine_cabinet_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="metadata" poster="assets/image/gr1_wine_cabinet_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Wine → Cabinet</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="gr1_bottle_cabinet_1.mp4">Ep 1</button><button class="vtab" data-file="gr1_bottle_cabinet_2.mp4">Ep 2</button><button class="vtab" data-file="gr1_bottle_cabinet_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="none" poster="assets/image/gr1_bottle_cabinet_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Bottle → Cabinet</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="gr1_can_drawer_1.mp4">Ep 1</button><button class="vtab" data-file="gr1_can_drawer_2.mp4">Ep 2</button><button class="vtab" data-file="gr1_can_drawer_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="none" poster="assets/image/gr1_can_drawer_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Can → Drawer</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="gr1_cup_drawer_1.mp4">Ep 1</button><button class="vtab" data-file="gr1_cup_drawer_2.mp4">Ep 2</button><button class="vtab" data-file="gr1_cup_drawer_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="none" poster="assets/image/gr1_cup_drawer_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Cup → Drawer</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="gr1_milk_microwave_1.mp4">Ep 1</button><button class="vtab" data-file="gr1_milk_microwave_2.mp4">Ep 2</button><button class="vtab" data-file="gr1_milk_microwave_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="none" poster="assets/image/gr1_milk_microwave_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Milk → Microwave</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="gr1_potato_microwave_1.mp4">Ep 1</button><button class="vtab" data-file="gr1_potato_microwave_2.mp4">Ep 2</button><button class="vtab" data-file="gr1_potato_microwave_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="none" poster="assets/image/gr1_potato_microwave_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Potato → Microwave</figcaption></figure>
+        <figure class="vcard"><div class="vtabs"><button class="vtab is-on" data-file="gr1_wine_cabinet_1.mp4">Ep 1</button><button class="vtab" data-file="gr1_wine_cabinet_2.mp4">Ep 2</button><button class="vtab" data-file="gr1_wine_cabinet_3.mp4">Ep 3</button></div><video class="takevid autovid" muted loop playsinline preload="none" poster="assets/image/gr1_wine_cabinet_poster.webp" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block"></video><figcaption>Wine → Cabinet</figcaption></figure>
       </div>
     </div>
 
@@ -616,9 +615,9 @@ footer a:hover{color:var(--accent)}
       <p class="muted">On EgoDex we forecast bimanual hand pose and report Average / Final Displacement Error (ADE / FDE, metres, lower is better), best‑of-<i>S</i> across <i>S</i> samples. UniLAP posts <b>0.029 / 0.038&nbsp;m</b> at <i>S</i>=10, and its relative ADE margin over the strongest X‑IL baseline widens from 13% at <i>S</i>=1 to <b>24%</b> at <i>S</i>=10, a gain that comes from modeling actions in a latent space, not from flow matching alone.</p>
       <p class="vgroup">Predicted hand‑pose rollouts &middot; three EgoDex tasks (1.6&nbsp;s keypoint trajectories overlaid on the egocentric frame)</p>
       <div class="grid g3">
-        <figure class="vcard"><video class="autovid" muted loop playsinline preload="metadata" poster="assets/image/egodex_furniture_poster.webp" style="width:100%;aspect-ratio:694/512;object-fit:cover;border-radius:14px;display:block"><source src="assets/video/egodex_furniture.mp4" type="video/mp4"></video><figcaption>Assemble furniture</figcaption></figure>
-        <figure class="vcard"><video class="autovid" muted loop playsinline preload="metadata" poster="assets/image/egodex_stack_poster.webp" style="width:100%;aspect-ratio:694/512;object-fit:cover;border-radius:14px;display:block"><source src="assets/video/egodex_stack.mp4" type="video/mp4"></video><figcaption>Stack</figcaption></figure>
-        <figure class="vcard"><video class="autovid" muted loop playsinline preload="metadata" poster="assets/image/egodex_pickplace_poster.webp" style="width:100%;aspect-ratio:694/512;object-fit:cover;border-radius:14px;display:block"><source src="assets/video/egodex_pickplace.mp4" type="video/mp4"></video><figcaption>Vertical pick &amp; place</figcaption></figure>
+        <figure class="vcard"><video class="autovid" muted loop playsinline preload="none" poster="assets/image/egodex_furniture_poster.webp" style="width:100%;aspect-ratio:694/512;object-fit:cover;border-radius:14px;display:block"><source data-src="assets/video/egodex_furniture.mp4" type="video/mp4"></video><figcaption>Assemble furniture</figcaption></figure>
+        <figure class="vcard"><video class="autovid" muted loop playsinline preload="none" poster="assets/image/egodex_stack_poster.webp" style="width:100%;aspect-ratio:694/512;object-fit:cover;border-radius:14px;display:block"><source data-src="assets/video/egodex_stack.mp4" type="video/mp4"></video><figcaption>Stack</figcaption></figure>
+        <figure class="vcard"><video class="autovid" muted loop playsinline preload="none" poster="assets/image/egodex_pickplace_poster.webp" style="width:100%;aspect-ratio:694/512;object-fit:cover;border-radius:14px;display:block"><source data-src="assets/video/egodex_pickplace.mp4" type="video/mp4"></video><figcaption>Vertical pick &amp; place</figcaption></figure>
       </div>
     </div>
   </div>
@@ -631,8 +630,8 @@ footer a:hover{color:var(--accent)}
     <h2 class="h">What the latent captures</h2>
     <p class="lead muted">Two probes indicate the latent encodes <i>action</i>, not appearance: it reconstructs the future from the <i>current</i> frame alone, and it tracks <i>what</i> an instruction asks and <i>where</i>, not its surface wording.</p>
     <div class="probe-grid">
-      <figure><div class="figframe"><img src="assets/image/z_pred_quality.png" alt="Future-frame reconstruction: teacher vs. ours" loading="lazy" /></div><figcaption><b>Teacher fidelity.</b> From the current frame alone (no future), the latent reconstructs the future at close to the LAM teacher's PSNR.</figcaption></figure>
-      <figure><div class="figframe"><img src="assets/image/lang_sensitivity.png" alt="Latent shift grows with the semantic distance of the instruction edit" loading="lazy" /></div><figcaption><b>Language sensitivity.</b> The latent barely moves under a paraphrase or object swap, but shifts <b>2.7&times;</b> / <b>4.3&times;</b> under verb / location edits and <b>17.5&times;</b> when language is removed.</figcaption></figure>
+      <figure><div class="figframe"><img width="1500" height="800" src="assets/image/z_pred_quality.png" alt="Future-frame reconstruction: teacher vs. ours" loading="lazy" /></div><figcaption><b>Teacher fidelity.</b> From the current frame alone (no future), the latent reconstructs the future at close to the LAM teacher's PSNR.</figcaption></figure>
+      <figure><div class="figframe"><img width="1500" height="974" src="assets/image/lang_sensitivity.png" alt="Latent shift grows with the semantic distance of the instruction edit" loading="lazy" /></div><figcaption><b>Language sensitivity.</b> The latent barely moves under a paraphrase or object swap, but shifts <b>2.7&times;</b> / <b>4.3&times;</b> under verb / location edits and <b>17.5&times;</b> when language is removed.</figcaption></figure>
     </div>
   </div>
 </section>
@@ -647,17 +646,16 @@ footer a:hover{color:var(--accent)}
         <span>cite this work</span>
         <button class="copy" id="copyBtn" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          <span id="copyLabel">Copy</span>
+          <span id="copyLabel" aria-live="polite" aria-atomic="true">Copy</span>
         </button>
       </div>
-<pre class="bib" id="bibtex">@article{unilap2026,
+<pre class="bib" id="bibtexCode">@article{unilap2026,
   title   = {UniLAP: A Unified Latent Action Policy for Cross-Embodiment Manipulation},
   author  = {Lei Yao and Qiao Feng and Mutian Tong and Qihao Yun and Lap-Pui Chau and Lingjie Liu},
-  journal = {Under Review},
+  journal = {arXiv preprint arXiv:2610.16969},
   year    = {2026},
 }</pre>
     </div>
-    <p class="note">Citation venue and key are placeholders. Replace with the final venue and key on publication.</p>
   </div>
 </section>
 
@@ -705,7 +703,7 @@ footer a:hover{color:var(--accent)}
       <strong style="color:var(--ink-soft)">UniLAP</strong> · A Unified Latent Action Policy for Cross‑Embodiment Manipulation
     </div>
     <div>
-      Project page · <a href="#top">back to top ↑</a> · <span style="color:var(--ink-faint)">© 2026 · template hand‑built for this paper</span>
+      Project page · <a href="#top">back to top ↑</a> · <span style="color:var(--ink-faint)">© 2026</span>
     </div>
   </div>
 </footer>
@@ -724,71 +722,159 @@ footer a:hover{color:var(--accent)}
 /* active nav link on scroll */
 (function(){
   var links=Array.prototype.slice.call(document.querySelectorAll('.nav-links a'));
-  var map={};links.forEach(function(a){var id=a.getAttribute('href');if(id&&id.indexOf('#')===0){var s=document.querySelector(id);if(s)map[id]=s}});
-  var ids=Object.keys(map);if(!ids.length||!('IntersectionObserver'in window))return;
-  var io=new IntersectionObserver(function(en){
-    en.forEach(function(x){
-      if(x.isIntersecting){
-        links.forEach(function(a){a.classList.toggle('active',map[a.getAttribute('href')]===x.target)})
-      }
-    })
-  },{rootMargin:'-45% 0px -50% 0px',threshold:0});
-  ids.forEach(function(id){io.observe(map[id])});
+  var sections=[];
+  links.forEach(function(link){
+    var href=link.getAttribute('href');
+    if(href&&href.charAt(0)==='#'){
+      var section=document.getElementById(href.slice(1));
+      if(section)sections.push({link:link,section:section});
+    }
+  });
+  if(!sections.length)return;
+  var nav=document.querySelector('nav'),pending=false;
+  function update(){
+    pending=false;
+    var boundary=(nav?nav.getBoundingClientRect().bottom:0)+24,active=null;
+    sections.forEach(function(item){
+      if(item.section.getBoundingClientRect().top<=boundary)active=item.link;
+    });
+    links.forEach(function(link){
+      var selected=link===active;
+      link.classList.toggle('active',selected);
+      if(selected)link.setAttribute('aria-current','location');
+      else link.removeAttribute('aria-current');
+    });
+  }
+  function schedule(){
+    if(pending)return;
+    pending=true;
+    window.requestAnimationFrame(update);
+  }
+  window.addEventListener('scroll',schedule,{passive:true});
+  window.addEventListener('resize',schedule);
+  window.addEventListener('load',schedule);
+  update();
 })();
 
 /* copy BibTeX */
 (function(){
-  var btn=document.getElementById('copyBtn'),pre=document.getElementById('bibtex'),lbl=document.getElementById('copyLabel');
-  if(!btn)return;
+  var btn=document.getElementById('copyBtn'),pre=document.getElementById('bibtexCode'),lbl=document.getElementById('copyLabel'),timer;
+  if(!btn||!pre||!lbl)return;
+  function report(ok){
+    clearTimeout(timer);
+    btn.classList.toggle('ok',ok);
+    lbl.textContent=ok?'Copied!':'Copy failed';
+    timer=setTimeout(function(){btn.classList.remove('ok');lbl.textContent='Copy'},2000);
+  }
+  function fallback(text){
+    var ta=document.createElement('textarea'),ok=false;
+    ta.value=text;
+    ta.setAttribute('readonly','');
+    ta.style.cssText='position:fixed;left:-9999px;top:0';
+    document.body.appendChild(ta);
+    ta.select();
+    try{ok=document.execCommand('copy')}catch(e){}
+    document.body.removeChild(ta);
+    btn.focus();
+    return ok;
+  }
   btn.addEventListener('click',function(){
-    var t=pre.innerText;
-    var done=function(){btn.classList.add('ok');lbl.textContent='Copied!';setTimeout(function(){btn.classList.remove('ok');lbl.textContent='Copy'},1600)};
-    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,done)}
-    else{var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta);done()}
+    var text=pre.textContent;
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){report(true)},function(){report(fallback(text))});
+    }else{report(fallback(text))}
   });
 })();
 
 /* auto-play teaser / method video when scrolled into view */
 (function(){
   var vids=document.querySelectorAll('.autovid');if(!vids.length)return;
-  /* If autoplay is refused (iOS low-power mode, data saver, strict policies) fall
-     back to the native controls so the clip stays watchable instead of freezing
-     on its poster. Clicking any clip toggles playback. */
-  function play(v){v.play().catch(function(){v.controls=true})}
-  vids.forEach(function(v){
-    v.style.cursor="pointer";
-    v.addEventListener("click",function(){v.paused?play(v):v.pause()});
-  });
-  if(!('IntersectionObserver'in window)){vids.forEach(function(v){play(v)});return}
-  var vo=new IntersectionObserver(function(en){
-    en.forEach(function(x){var v=x.target;
-      if(x.isIntersecting){try{v.currentTime=0}catch(e){}play(v)}else{v.pause()}})
-  },{threshold:0.35});
-  vids.forEach(function(v){vo.observe(v)});
-})();
-
-/* per-task take switcher (object initial position) */
-(function(){
-  document.querySelectorAll(".vtabs").forEach(function(g){
-    var fig=g.closest(".vcard"),btns=g.querySelectorAll(".vtab");
-    function load(b,user){
-      btns.forEach(function(x){x.classList.toggle("is-on",x===b)});
-      var file="assets/video/"+b.getAttribute("data-file");
-      var vid=fig.querySelector("video.takevid");
-      if(vid){
-        /* First paint: only point at the file. The poster stays visible and the
-           .autovid observer starts playback once the card scrolls into view, so
-           off-screen cards never download or play. */
-        if(!user){vid.setAttribute("src",file); return;}
-        vid.style.opacity="0";
-        vid.setAttribute("src",file); vid.load();
-        var on=function(){vid.style.opacity="1"; vid.play().catch(function(){vid.controls=true}); vid.removeEventListener("loadeddata",on);};
-        vid.addEventListener("loadeddata",on);
-      }
+  var states=new Map();
+  function pauseAutomatically(v){
+    if(!v.paused){states.get(v).ignoredPauses++;v.pause()}
+  }
+  function ensure(v,force){
+    var state=states.get(v),source=v.querySelector('source[data-src]');
+    var file=v.getAttribute('data-src')||(source&&source.getAttribute('data-src'));
+    if(!file||(state.failed&&!force))return false;
+    if(force||v.getAttribute('src')!==file){
+      state.failed=false;
+      state.attempt++;
+      state.retry.style.display='none';
+      v.preload='metadata';
+      pauseAutomatically(v);
+      v.setAttribute('src',file);
+      v.load();
     }
-    btns.forEach(function(b){b.addEventListener("click",function(){load(b,true)})});
-    load(g.querySelector(".vtab.is-on")||btns[0]);
+    return true;
+  }
+  function play(v,force){
+    if(!ensure(v,force))return;
+    var state=states.get(v),attempt=state.attempt;
+    v.play().catch(function(error){
+      if(attempt!==state.attempt||state.failed||error.name==='AbortError')return;
+      v.controls=true;
+    });
+  }
+  vids.forEach(function(v){
+    var retry=document.createElement('button');
+    retry.type='button';
+    retry.className='vtab';
+    retry.textContent='Video unavailable. Retry';
+    retry.style.display='none';
+    retry.style.marginTop='8px';
+    v.insertAdjacentElement('afterend',retry);
+    var state={failed:false,attempt:0,retry:retry,manualPaused:false,ignoredPauses:0};
+    states.set(v,state);
+    retry.addEventListener('click',function(){state.manualPaused=false;play(v,true)});
+    v.addEventListener('pause',function(){
+      if(state.ignoredPauses){state.ignoredPauses--;return}
+      if(!v.ended)state.manualPaused=true;
+    });
+    v.addEventListener('play',function(){if(!v.paused)state.manualPaused=false});
+    v.addEventListener('error',function(){
+      if(!v.getAttribute('src')||!v.error)return;
+      state.failed=true;
+      state.attempt++;
+      pauseAutomatically(v);
+      v.removeAttribute('src');
+      v.load();
+      retry.style.display='inline-block';
+    });
+    v.style.cursor='pointer';
+    v.addEventListener('click',function(){
+      if(v.paused){state.manualPaused=false;play(v,state.failed)}
+      else{state.manualPaused=true;v.pause()}
+    });
   });
+
+  document.querySelectorAll('.vtabs').forEach(function(g){
+    var fig=g.closest('.vcard'),btns=g.querySelectorAll('.vtab');
+    var v=fig.querySelector('video.takevid');if(!v)return;
+    function select(b,user){
+      btns.forEach(function(x){x.classList.toggle('is-on',x===b)});
+      v.setAttribute('data-src','assets/video/'+b.getAttribute('data-file'));
+      if(user){states.get(v).manualPaused=false;play(v,true)}
+    }
+    btns.forEach(function(b){b.addEventListener('click',function(){select(b,true)})});
+    select(g.querySelector('.vtab.is-on')||btns[0],false);
+  });
+
+  if(!('IntersectionObserver'in window)){vids.forEach(function(v){play(v)});return}
+  var nearby=new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){ensure(entry.target,false);nearby.unobserve(entry.target)}
+    });
+  },{rootMargin:'300px 0px',threshold:0});
+  var visible=new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      var v=entry.target;
+      if(entry.isIntersecting){
+        if(!states.get(v).manualPaused&&!v.ended)play(v);
+      }else{pauseAutomatically(v)}
+    });
+  },{threshold:0.35});
+  vids.forEach(function(v){nearby.observe(v);visible.observe(v)});
 })();
 
 /* theme toggle (the head script already picked the initial theme) */
